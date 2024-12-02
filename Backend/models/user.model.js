@@ -38,6 +38,9 @@ userSchema.methods.comparePassword = async function (password) {
 
 //to hash password
 userSchema.statics.hashPassword = async function (password) {
+  if (!password) {
+    throw new Error("Password is required for hashing.");
+  }
   return await bcrypt.hash(password, 10);
 };
 

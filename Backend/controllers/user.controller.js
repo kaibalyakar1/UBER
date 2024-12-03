@@ -6,16 +6,19 @@ module.exports.registerUser = async (req, res, next) => {
   try {
     // validator(req.body);
 
-    const { fullName, email, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
-    if (!fullName || !email || !password) {
+    if (!firstName || !lastName || !email || !password) {
       return res.status(400).send({ error: "All fields are required" });
     }
 
     const hashedPassword = await userModel.hashPassword(password);
 
     const user = await userModel.create({
-      fullName,
+      fullName: {
+        firstName,
+        lastName,
+      },
       email,
       password: hashedPassword,
     });

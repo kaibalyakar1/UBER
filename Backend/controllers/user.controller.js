@@ -1,5 +1,7 @@
 const userModel = require("../models/user.model");
 const validator = require("../Validators/user.validator");
+
+const blackList = require("../models/blacklistToken.model");
 module.exports.registerUser = async (req, res, next) => {
   try {
     // validator(req.body);
@@ -56,11 +58,10 @@ module.exports.getUserProfile = async (req, res, next) => {
   res.status(200).send({ user: req.user });
 };
 
-// module.exports.logoutUser = async (req, res, next) => {
-//   res.clearCookie("token");
-//   const token = req.cookies.token || req.headers.authorization.split(" ")[1];
+module.exports.logoutUser = async (req, res, next) => {
+  res.clearCookie("token");
+  const token = req.cookies.token || req.headers.authorization.split(" ")[1];
 
-//   await blackListTokenModel.create({ token });
-
-//   res.status(200).json({ message: "Logged out" });
-// };
+  await blackList.create({ token: token });
+  res.status(200).send({ message: "User logged out successfully" });
+};

@@ -26,8 +26,16 @@ const userSchema = new mongoose.Schema(
 );
 
 //to generate token while signing up or login
-userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ _id: this._id }, process.env.SECRET_KEY);
+// userSchema.methods.generateAuthToken = function () {
+//   const token = jwt.sign({ _id: this._id }, process.env.SECRET_KEY),{
+//     expiresIn: '24h'}
+//   return token;
+// };
+
+userSchema.methods.generateAuthToken = async function () {
+  const token = jwt.sign({ _id: this._id }, process.env.SECRET_KEY, {
+    expiresIn: "24h",
+  }); //expires in 24 hours
   return token;
 };
 

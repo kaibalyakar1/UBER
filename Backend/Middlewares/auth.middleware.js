@@ -5,28 +5,22 @@ const blacklistTokenModel = require("../models/blacklistToken.model");
 const captainModel = require("../models/captain.model");
 
 module.exports.authUser = async (req, res, next) => {
-  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
-
-  if (!token) {
-    return res.status(400).send({ error: "User not authenticated" }); // Return to prevent further execution
-  }
-
-  const isBlackListed = await blacklistTokenModel.findOne({ token: token });
-  if (isBlackListed) {
-    return res.status(400).send({ error: "User not authenticated" }); // Return here as well
-  }
-
   try {
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    const user = await userModel.findById(decoded._id);
-    if (!user) {
-      return res.status(400).send({ error: "User not authenticated" }); // Return on user not found
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(400).send({ error: "No token provided" });
     }
 
-    req.user = user; // Attach the user to the request object
-    next(); // Pass control to the next middleware
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+
+    // Attach user data if valid
+    req.user = decoded;
+    next();
   } catch (err) {
-    return res.status(400).send({ error: err.message }); // Handle errors properly
+    console.error("Token verification error:", err.message);
+    return res.status(400).send({ error: "Invalid or malformed token" });
   }
 };
 

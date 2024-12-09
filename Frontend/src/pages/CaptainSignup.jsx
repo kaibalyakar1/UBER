@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 const CaptainSignup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [firstname, setFirstname] = useState("");
+  const [lastName, setLastName] = useState("");
   const [data, setData] = useState({});
   const submitHandler = (e) => {
     e.preventDefault();
@@ -32,9 +33,16 @@ const CaptainSignup = () => {
           <input
             className="bg-[#eeeeee] mb-5 rounded px-4 py-2 w-full text-lg placeholder:text-xl"
             type="text"
-            placeholder="Enter your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            placeholder="First name"
+            value={firstname}
+            onChange={(e) => setFirstname(e.target.value)}
+          />
+          <input
+            className="bg-[#eeeeee] mb-5 rounded px-4 py-2 w-full text-lg placeholder:text-xl"
+            type="text"
+            placeholder="last name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
           />
           <h3 className="text-xl font-medium mb-2">What's your email</h3>
           <input
@@ -59,7 +67,7 @@ const CaptainSignup = () => {
           </button>
           <p>
             Already have an account?
-            <Link to="/captain-login" className="text-blue-600">
+            <Link to="/" className="text-blue-600">
               {" "}
               Login
             </Link>

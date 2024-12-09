@@ -2,11 +2,16 @@ const userModel = require("../models/user.model");
 const validator = require("../Validators/user.validator");
 
 const blackList = require("../models/blacklistToken.model");
+const blacklistTokenModel = require("../models/blacklistToken.model");
 module.exports.registerUser = async (req, res, next) => {
   try {
     // validator(req.body);
 
-    const { firstName, lastName, email, password } = req.body;
+    const {
+      fullName: { firstName, lastName },
+      email,
+      password,
+    } = req.body;
 
     if (!firstName || !lastName || !email || !password) {
       return res.status(400).send({ error: "All fields are required" });
@@ -62,9 +67,29 @@ module.exports.getUserProfile = async (req, res, next) => {
 };
 
 module.exports.logoutUser = async (req, res, next) => {
-  res.clearCookie("token");
-  const token = req.cookies.token || req.headers.authorization.split(" ")[1];
+  try {
+    const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
-  await blackList.create({ token: token });
-  res.status(200).send({ message: "User logged out successfully" });
+    if (!token) {
+      console.log("Token not provided during logout");
+      return res.status(400).send({ error: "Token not found" });
+    }
+
+    console.log("Received token for logout:", token);
+
+    const existingToken = await blacklistTokenModel.findOne({ token });
+    console.log("Existing token status in blacklist:", existingToken);
+
+    if (!existingToken) {
+      console.log("Adding token to blacklist");
+      await blacklistTokenModel.create({ token });
+    }
+
+    console.log("Token added to blacklist successfully");
+    res.clearCookie("token");
+    res.status(200).send({ message: "User logged out successfully" });
+  } catch (error) {
+    console.error("Error during logout process:", error);
+    res.status(500).send({ message: "An error occurred during logout" });
+  }
 };

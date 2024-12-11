@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
 const captainSchema = new mongoose.Schema(
   {
     fullName: {
@@ -41,7 +42,8 @@ const captainSchema = new mongoose.Schema(
         type: String,
         required: true,
       },
-      capaciy: {
+      capacity: {
+        // Fixed typo
         type: Number,
         required: true,
       },
@@ -58,16 +60,18 @@ const captainSchema = new mongoose.Schema(
     location: {
       lat: {
         type: Number,
-        required: true,
+        required: false, // Adjusted to optional
       },
       long: {
         type: Number,
-        required: true,
+        required: false, // Adjusted to optional
       },
     },
   },
   { timestamps: true }
 );
+
+// Instance method for generating auth token
 captainSchema.methods.generateAuthToken = function () {
   const token = jwt.sign({ _id: this._id }, process.env.SECRET_KEY, {
     expiresIn: "1d",
@@ -75,14 +79,17 @@ captainSchema.methods.generateAuthToken = function () {
   return token;
 };
 
+// Instance method for password comparison
 captainSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
+// Static method for hashing password
 captainSchema.statics.hashPassword = async function (password) {
   if (!password) {
     throw new Error("Password is required for hashing.");
   }
   return await bcrypt.hash(password, 10);
 };
+
 module.exports = mongoose.model("Captain", captainSchema);

@@ -8,8 +8,7 @@ module.exports.registerCaptain = async (req, res) => {
       fullName: { firstName, lastName },
       email,
       password,
-      vehicle: { color, capaciy, plate, vehicleType },
-      location: { lat, long },
+      vehicle: { color, capacity, plate, vehicleType },
     } = req.body;
 
     // Validate request data
@@ -19,11 +18,9 @@ module.exports.registerCaptain = async (req, res) => {
       !email ||
       !password ||
       !color ||
-      !capaciy ||
+      !capacity ||
       !plate ||
-      !vehicleType ||
-      !lat ||
-      !long
+      !vehicleType
     ) {
       return res.status(400).send({ error: "All fields are required." });
     }
@@ -44,8 +41,7 @@ module.exports.registerCaptain = async (req, res) => {
       fullName: { firstName, lastName },
       email,
       password: hashedPassword,
-      vehicle: { color, capaciy, plate, vehicleType },
-      location: { lat, long },
+      vehicle: { color, capacity, plate, vehicleType },
     });
 
     // Save the captain to the database
@@ -62,7 +58,6 @@ module.exports.registerCaptain = async (req, res) => {
         fullName: newCaptain.fullName,
         email: newCaptain.email,
         vehicle: newCaptain.vehicle,
-        location: newCaptain.location,
         status: newCaptain.status,
       },
       token,
@@ -72,6 +67,7 @@ module.exports.registerCaptain = async (req, res) => {
     res.status(500).send({ error: "Internal server error." });
   }
 };
+
 module.exports.loginCaptain = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -107,7 +103,6 @@ module.exports.loginCaptain = async (req, res) => {
         fullName: captain.fullName,
         email: captain.email,
         vehicle: captain.vehicle,
-        location: captain.location,
         status: captain.status,
       },
     });

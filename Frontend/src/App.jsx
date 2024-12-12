@@ -10,6 +10,7 @@ import UserProtectedWrapper from "./pages/userProtectedWrapper";
 import UserLogout from "./pages/UserLogout";
 import CaptainHome from "./pages/CaptainHome";
 import CaptainProtectWrapper from "./pages/CaptainProtectWrapper";
+import Home2 from "./pages/Home2";
 
 const App = () => {
   return (
@@ -24,7 +25,7 @@ const App = () => {
           path="/user-dash"
           element={
             <UserProtectedWrapper>
-              <UserDash />
+              <Home2 />
             </UserProtectedWrapper>
           }
         />

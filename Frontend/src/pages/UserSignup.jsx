@@ -9,7 +9,7 @@ const UserSignup = () => {
   const [lastName, setLastName] = useState("");
   const [data, setData] = useState({});
 
-  const { user, setuser } = useContext(userDataContext);
+  const { user, setuser } = React.useContext(userDataContext);
   const navigate = useNavigate();
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -28,7 +28,7 @@ const UserSignup = () => {
 
     if (response.status === 201) {
       const data = response.data;
-      setuser(data.user);
+      // setuser(data.user);
       localStorage.setItem("token", data.token);
 
       navigate("/captain-login");

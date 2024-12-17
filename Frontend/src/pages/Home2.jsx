@@ -3,12 +3,26 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import "remixicon/fonts/remixicon.css";
 import { use } from "react";
+import LocationSearchPanel from "../components/LocationSearchPanel";
+import VehiclePanel from "../components/VehiclePanel";
+import ConfirmedRide from "../components/ConfirmedRide";
+import WaitForDriver from "../components/WaitForDriver";
+import LookingForDriver from "../components/LookingForDriver";
 const Home2 = () => {
   const [pickup, setpickup] = useState("");
   const [dropoff, setdropoff] = useState("");
   const [panelOpen, setPanelOpen] = useState(false);
+  const [vehcilePanel, setvehcilePanel] = useState(false);
+  const [confrimRidePanel, setconfrimRidePanel] = useState(false);
+  const [waitDriverPanel, setwaitDriverPanel] = useState(false);
+  const [lookingForDriver, setlookingForDriver] = useState(false);
+
   const panelref = useRef(null);
   const hide = useRef(null);
+  const open = useRef(null);
+  const confirmRidePanelRef = useRef(null);
+  const waitDriverPanelRef = useRef(null);
+  const lookingForDriverPanelRef = useRef(null);
   const submitHandler = (e) => {
     e.preventDefault();
   };
@@ -39,8 +53,63 @@ const Home2 = () => {
     [panelOpen]
   );
 
+  useGSAP(
+    function () {
+      if (vehcilePanel) {
+        gsap.to(open.current, {
+          transform: "translateY(0%)",
+        });
+      } else {
+        gsap.to(open.current, {
+          transform: "translateY(100%)",
+        });
+      }
+    },
+    [vehcilePanel]
+  );
+
+  useGSAP(
+    function () {
+      if (confrimRidePanel) {
+        gsap.to(confirmRidePanelRef.current, {
+          transform: "translateY(0%)",
+        });
+      } else {
+        gsap.to(confirmRidePanelRef.current, {
+          transform: "translateY(100%)",
+        });
+      }
+    },
+    [confrimRidePanel]
+  );
+
+  useGSAP(
+    function () {
+      if (waitDriverPanel) {
+        gsap.to(waitDriverPanelRef.current, {
+          transform: "translateY(0%)",
+        });
+      } else {
+        gsap.to(waitDriverPanelRef.current, {
+          transform: "translateY(100%)",
+        });
+      }
+    },
+    [waitDriverPanel]
+  );
+  useGSAP(function () {
+    if (lookingForDriver) {
+      gsap.to(lookingForDriverPanelRef.current, {
+        transform: "translateY(0%)",
+      });
+    } else {
+      gsap.to(lookingForDriverPanelRef.current, {
+        transform: "translateY(100%)",
+      });
+    }
+  });
   return (
-    <div className="h-screen relative">
+    <div className="h-screen relative overflow-hidden">
       <img
         className="w-12 absolute top-7 left-7"
         src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
@@ -86,7 +155,51 @@ const Home2 = () => {
           </form>
         </div>
 
-        <div ref={panelref} className=" bg-red-500 "></div>
+        <div ref={panelref} className="bg-white p-0">
+          <LocationSearchPanel
+            setPanelOpen={setPanelOpen}
+            vehcilePanel={vehcilePanel}
+            setvehcilePanel={setvehcilePanel}
+          />
+        </div>
+      </div>
+
+      <div
+        ref={open}
+        className="fixed w-full z-10 bottom-0 translate-y-full bg-white py-8 px-4"
+      >
+        <VehiclePanel
+          vehcilePanel={vehcilePanel}
+          setvehcilePanel={setvehcilePanel}
+          setconfrimRidePanel={setconfrimRidePanel}
+        />
+      </div>
+
+      <div
+        ref={confirmRidePanelRef}
+        className="fixed w-full z-10 bottom-0 translate-y-full bg-white py-8 px-4"
+      >
+        <ConfirmedRide
+          setconfrimRidePanel={setconfrimRidePanel}
+          setwaitDriverPanel={setwaitDriverPanel}
+        />
+      </div>
+
+      <div
+        ref={waitDriverPanelRef}
+        className="fixed w-full z-10 bottom-0 translate-y-full bg-white py-8 px-4"
+      >
+        <WaitForDriver setwaitDriverPanel={setwaitDriverPanel} />
+      </div>
+
+      <div
+        ref={lookingForDriverPanelRef}
+        className="fixed w-full h-[50%] z-10 bottom-0translate-y-full bg-white py-8 px-4"
+      >
+        <LookingForDriver
+          setlookingForDriver={setlookingForDriver}
+          lookingForDriver={lookingForDriver}
+        />
       </div>
     </div>
   );

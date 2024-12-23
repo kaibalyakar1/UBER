@@ -8,6 +8,7 @@ import VehiclePanel from "../components/VehiclePanel";
 import ConfirmedRide from "../components/ConfirmedRide";
 import WaitForDriver from "../components/WaitForDriver";
 import LookingForDriver from "../components/LookingForDriver";
+import RidePopUp from "../components/RidePopUp";
 const Home2 = () => {
   const [pickup, setpickup] = useState("");
   const [dropoff, setdropoff] = useState("");

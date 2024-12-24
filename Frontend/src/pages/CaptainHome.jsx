@@ -68,7 +68,7 @@ const CaptainHome = () => {
 
       <div
         ref={confirmPanelRef}
-        className="fixed w-full  z-10 bottom-0 translate-y-full bg-white py-10  px-4"
+        className="h-4/5 fixed w-full  z-10 bottom-0 translate-y-full bg-white py-10  px-4"
       >
         <ConfirmRidePopup setconfirmPanel={setconfirmPanel} />
       </div>

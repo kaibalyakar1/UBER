@@ -6,17 +6,22 @@ const captainModel = require("../models/captain.model");
 
 module.exports.authUser = async (req, res, next) => {
   try {
+    console.log("Authorization Header:", req.headers.authorization);
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
+      console.error("No token provided");
       return res.status(400).send({ error: "No token provided" });
     }
 
     // Verify the token
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    console.log("Decoded Token:", decoded);
 
-    // Attach user data if valid
+    // Attach user data to request
     req.user = decoded;
+
+    console.log("Request Body in Middleware:", req.body); // Log body to debug issues
     next();
   } catch (err) {
     console.error("Token verification error:", err.message);

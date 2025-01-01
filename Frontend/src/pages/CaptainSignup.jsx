@@ -150,7 +150,6 @@ const CaptainSignup = () => {
               <option value="car">Car</option>
               <option value="auto">Auto</option>
               <option value="motorcycle">motorcycle</option>{" "}
-              {/* Changed from 'moto' */}
             </select>
           </div>
 

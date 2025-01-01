@@ -79,7 +79,7 @@ module.exports.createRide = async (req, res) => {
 // Helper function to calculate the distance between pickup and destination
 async function calculateDistance(pickup, destination) {
   // Example of using Google Maps API to calculate distance
-  const apiKey = "AIzaSyCnDX6SYV18AII1i4ZSucM636rN7-JsuZM"; // Replace with your actual Google Maps API key
+  const apiKey = "AIzaSyBNRo83-kRtFgNuVvIaHXSnxaxFzDnnA4Y"; // Replace with your actual Google Maps API key
   const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${pickup}&destinations=${destination}&key=${apiKey}`;
 
   try {

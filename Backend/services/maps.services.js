@@ -1,5 +1,6 @@
+require("dotenv").config();
 const getAddressCoordinate = async (address) => {
-  const apiKey = "AIzaSyCnDX6SYV18AII1i4ZSucM636rN7-JsuZM";
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
     address
   )}&key=${apiKey}`;
@@ -28,7 +29,7 @@ const getDistance = async (origin, destination) => {
     throw new Error("Origin and destination are required.");
   }
 
-  const apiKey = "AIzaSyCnDX6SYV18AII1i4ZSucM636rN7-JsuZM";
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(
     origin
   )}&destinations=${encodeURIComponent(destination)}&key=${apiKey}`;
@@ -77,7 +78,7 @@ const getSuggestions = async (address) => {
     throw new Error("Address is required.");
   }
 
-  const apiKey = "AIzaSyCnDX6SYV18AII1i4ZSucM636rN7-JsuZM";
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
     address
   )}&key=${apiKey}`;

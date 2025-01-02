@@ -3,6 +3,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import "remixicon/fonts/remixicon.css";
 import { use } from "react";
+import axios from "axios";
 import LocationSearchPanel from "../components/LocationSearchPanel";
 import VehiclePanel from "../components/VehiclePanel";
 import ConfirmedRide from "../components/ConfirmedRide";
@@ -17,13 +18,71 @@ const Home2 = () => {
   const [confrimRidePanel, setconfrimRidePanel] = useState(false);
   const [waitDriverPanel, setwaitDriverPanel] = useState(false);
   const [lookingForDriver, setlookingForDriver] = useState(false);
-
+  const [pickupSuggestions, setPickupSuggestions] = useState([]);
+  const [destinationSuggestions, setDestinationSuggestions] = useState([]);
+  const [activeField, setActiveField] = useState(null);
   const panelref = useRef(null);
   const hide = useRef(null);
   const open = useRef(null);
   const confirmRidePanelRef = useRef(null);
   const waitDriverPanelRef = useRef(null);
   const lookingForDriverPanelRef = useRef(null);
+  const handlePickupChange = async (e) => {
+    setpickup(e.target.value);
+
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        console.error("No token found in localStorage");
+        return;
+      }
+
+      const response = await axios.get(
+        `http://localhost:3000/api/v1/map/get-suggestions`,
+        {
+          params: { address: e.target.value },
+          headers: {
+            Authorization: `Bearer ${token}`, // Make sure to include Bearer
+          },
+        }
+      );
+      console.log("API Response:", response.data); // Debug log
+      setPickupSuggestions(response.data.suggestions);
+    } catch (error) {
+      console.error("API Error:", error.response?.data || error.message);
+      setPickupSuggestions([]);
+    }
+  };
+
+  const handleDestinationChange = async (e) => {
+    setdropoff(e.target.value);
+
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        console.error("No token found in localStorage");
+        return;
+      }
+
+      const response = await axios.get(
+        `http://localhost:3000/api/v1/map/get-suggestions`,
+        {
+          params: { address: e.target.value },
+          headers: {
+            Authorization: `Bearer ${token}`, // Make sure to include Bearer
+          },
+        }
+      );
+      console.log("API Response:", response.data); // Debug log
+      setDestinationSuggestions(response.data.suggestions);
+    } catch (error) {
+      console.error("API Error:", error.response?.data || error.message);
+      setDestinationSuggestions([]);
+    }
+  };
+
   const submitHandler = (e) => {
     e.preventDefault();
   };
@@ -142,16 +201,22 @@ const Home2 = () => {
               type="text"
               placeholder="Add a pickup location"
               value={pickup}
-              onChange={(e) => setpickup(e.target.value)}
-              onClick={() => setPanelOpen(true)}
+              onChange={handlePickupChange}
+              onClick={() => {
+                setPanelOpen(true);
+                setActiveField("pickup");
+              }}
             />
             <input
               className="my-2 border px-8 p-2 w-80 rounded-lg bg-gray-100"
               type="text"
               placeholder="Add a dropoff location"
               value={dropoff}
-              onChange={(e) => setdropoff(e.target.value)}
-              onClick={() => setPanelOpen(true)}
+              onChange={handleDestinationChange}
+              onClick={() => {
+                setPanelOpen(true);
+                setActiveField("destination");
+              }}
             />
           </form>
         </div>
@@ -161,6 +226,14 @@ const Home2 = () => {
             setPanelOpen={setPanelOpen}
             vehcilePanel={vehcilePanel}
             setvehcilePanel={setvehcilePanel}
+            setpickup={setpickup}
+            suggestion={
+              activeField === "pickup"
+                ? pickupSuggestions
+                : destinationSuggestions
+            }
+            setdropoff={setdropoff}
+            activeField={activeField}
           />
         </div>
       </div>

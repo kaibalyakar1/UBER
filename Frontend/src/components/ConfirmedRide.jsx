@@ -33,7 +33,7 @@ const ConfirmedRide = ({ setconfrimRidePanel, setwaitDriverPanel }) => {
         </div>
         <div className="w-full py-2">
           <div className="w-full flex items-center gap-2 border-b-2 border-gray-200">
-            <i class="ri-currency-line"></i>
+            <i className="ri-currency-line"></i>
             <div className="font-semibold">
               <h3>Rs. 100</h3>
             </div>

@@ -21,6 +21,7 @@ const Home2 = () => {
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
   const [activeField, setActiveField] = useState(null);
+  const [fare, setFare] = useState({});
   const panelref = useRef(null);
   const hide = useRef(null);
   const open = useRef(null);
@@ -168,6 +169,22 @@ const Home2 = () => {
       });
     }
   });
+
+  function findRide() {
+    setvehcilePanel(true);
+    setPanelOpen(false);
+
+    const response = axios.get("http://localhost:3000/api/v1/ride/get-fare", {
+      params: {
+        pickup,
+        destination,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`, // Make sure to include Bearer
+      },
+    });
+    console.log(response.data);
+  }
   return (
     <div className="h-screen relative overflow-hidden">
       <img
@@ -219,6 +236,12 @@ const Home2 = () => {
               }}
             />
           </form>
+          <button
+            className="w-full bg-black text-white p-2 rounded-lg"
+            onClick={findRide}
+          >
+            Find Ride
+          </button>
         </div>
 
         <div ref={panelref} className="bg-white p-0">

@@ -1,38 +1,18 @@
 const rideModel = require("../models/ride.model");
 const axios = require("axios"); // Required for making HTTP requests
 const { generateOTP } = require("../services/ride.service");
-
+const rideService = require("../services/ride.service");
 // Function to calculate the fare based on distance and vehicle type
-async function getFare(distance, vehicleType) {
-  if (typeof distance !== "number" || distance <= 0) {
-    throw new Error("Invalid distance provided to getFare");
+module.exports.getFare = async (req, res) => {
+  const { pickup, destination } = req.body;
+
+  try {
+    const fare = await rideService.getFare(pickup, destination);
+    return res.status(200).json(fare);
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
-
-  const baseFare = { auto: 30, car: 50, motorCycle: 20 };
-  const perKmRate = { auto: 10, car: 15, motorCycle: 5 };
-  const perMinuteRate = { auto: 2, car: 3, motorCycle: 1.5 };
-
-  // Check if vehicle type is valid
-  if (
-    !baseFare[vehicleType] ||
-    !perKmRate[vehicleType] ||
-    !perMinuteRate[vehicleType]
-  ) {
-    throw new Error("Invalid vehicle type");
-  }
-
-  const rideTime = 15; // Example: 15 minutes
-  const fare =
-    baseFare[vehicleType] +
-    distance * perKmRate[vehicleType] +
-    (rideTime / 60) * perMinuteRate[vehicleType];
-
-  if (isNaN(fare)) {
-    throw new Error("Fare calculation resulted in NaN");
-  }
-
-  return fare;
-}
+};
 
 // Controller function to create a new ride
 module.exports.createRide = async (req, res) => {
@@ -93,5 +73,3 @@ async function calculateDistance(pickup, destination) {
     throw new Error("Error calculating distance");
   }
 }
-
-module.exports.getFare = getFare;

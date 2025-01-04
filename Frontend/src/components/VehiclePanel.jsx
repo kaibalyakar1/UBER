@@ -4,6 +4,8 @@ const VehiclePanel = ({
   vehcilePanel,
   setvehcilePanel,
   setconfrimRidePanel,
+  setFare,
+  fare,
 }) => {
   return (
     <div>
@@ -39,7 +41,7 @@ const VehiclePanel = ({
             Affordable , compact cars
           </p>
         </div>
-        <h2 className="text-xl font-semibold ml-3">$15</h2>
+        <h2 className="text-xl font-semibold ml-3">{fare.car}</h2>
       </div>
       <div
         onClick={() => setconfrimRidePanel(true)}
@@ -62,7 +64,7 @@ const VehiclePanel = ({
             Affordable , compact cars
           </p>
         </div>
-        <h2 className="text-xl font-semibold ml-3">$15</h2>
+        <h2 className="text-xl font-semibold ml-3">{fare.auto}</h2>
       </div>
       <div
         onClick={() => setconfrimRidePanel(true)}
@@ -85,7 +87,7 @@ const VehiclePanel = ({
             Affordable , compact cars
           </p>
         </div>
-        <h2 className="text-xl font-semibold ml-3">$15</h2>
+        <h2 className="text-xl font-semibold ml-3">{fare.moto}</h2>
       </div>
     </div>
   );

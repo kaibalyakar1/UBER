@@ -1,8 +1,7 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import "remixicon/fonts/remixicon.css";
-import { use } from "react";
 import axios from "axios";
 import LocationSearchPanel from "../components/LocationSearchPanel";
 import VehiclePanel from "../components/VehiclePanel";
@@ -10,6 +9,9 @@ import ConfirmedRide from "../components/ConfirmedRide";
 import WaitForDriver from "../components/WaitForDriver";
 import LookingForDriver from "../components/LookingForDriver";
 import RidePopUp from "../components/RidePopUp";
+
+const token = localStorage.getItem("token");
+
 const Home2 = () => {
   const [pickup, setpickup] = useState("");
   const [dropoff, setdropoff] = useState("");
@@ -28,27 +30,29 @@ const Home2 = () => {
   const confirmRidePanelRef = useRef(null);
   const waitDriverPanelRef = useRef(null);
   const lookingForDriverPanelRef = useRef(null);
+
+  useEffect(() => {
+    if (!token) {
+      console.error("No token found in localStorage");
+    }
+  }, []);
+
   const handlePickupChange = async (e) => {
     setpickup(e.target.value);
 
+    if (!token) return;
+
     try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        console.error("No token found in localStorage");
-        return;
-      }
-
       const response = await axios.get(
         `http://localhost:3000/api/v1/map/get-suggestions`,
         {
           params: { address: e.target.value },
           headers: {
-            Authorization: `Bearer ${token}`, // Make sure to include Bearer
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-      console.log("API Response:", response.data); // Debug log
+      console.log("API Response:", response.data);
       setPickupSuggestions(response.data.suggestions);
     } catch (error) {
       console.error("API Error:", error.response?.data || error.message);
@@ -59,24 +63,18 @@ const Home2 = () => {
   const handleDestinationChange = async (e) => {
     setdropoff(e.target.value);
 
+    if (!token) return;
+
     try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        console.error("No token found in localStorage");
-        return;
-      }
-
       const response = await axios.get(
         `http://localhost:3000/api/v1/map/get-suggestions`,
         {
           params: { address: e.target.value },
           headers: {
-            Authorization: `Bearer ${token}`, // Make sure to include Bearer
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-      console.log("API Response:", response.data); // Debug log
       setDestinationSuggestions(response.data.suggestions);
     } catch (error) {
       console.error("API Error:", error.response?.data || error.message);
@@ -105,10 +103,6 @@ const Home2 = () => {
         gsap.to(hide.current, {
           opacity: 0,
         });
-      }
-
-      if (panelOpen) {
-      } else {
       }
     },
     [panelOpen]
@@ -158,6 +152,7 @@ const Home2 = () => {
     },
     [waitDriverPanel]
   );
+
   useGSAP(function () {
     if (lookingForDriver) {
       gsap.to(lookingForDriverPanelRef.current, {
@@ -170,21 +165,35 @@ const Home2 = () => {
     }
   });
 
-  function findRide() {
+  async function findRide() {
     setvehcilePanel(true);
     setPanelOpen(false);
+    console.log("Token:", token); // Debugging line
 
-    const response = axios.get("http://localhost:3000/api/v1/ride/get-fare", {
-      params: {
-        pickup,
-        destination,
-      },
-      headers: {
-        Authorization: `Bearer ${token}`, // Make sure to include Bearer
-      },
-    });
-    console.log(response.data);
+    if (!token) return;
+
+    const destination = dropoff;
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/v1/ride/get-fare",
+        {
+          pickup,
+          destination,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setFare(response.data);
+      console.log("API Response:", response.data);
+    } catch (error) {
+      console.error("API Error:", error.response?.data || error.message);
+    }
   }
+
   return (
     <div className="h-screen relative overflow-hidden">
       <img
@@ -269,6 +278,9 @@ const Home2 = () => {
           vehcilePanel={vehcilePanel}
           setvehcilePanel={setvehcilePanel}
           setconfrimRidePanel={setconfrimRidePanel}
+          // Pass the fare to the component
+          fare={fare}
+          setFare={setFare}
         />
       </div>
 

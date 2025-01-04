@@ -2,32 +2,58 @@ const rideModel = require("../models/ride.model");
 const mapService = require("./maps.services");
 const crypto = require("crypto");
 
-async function getFare(distance, vehicleType) {
+async function getFare(pickup, destination) {
+  if (!pickup || !destination) {
+    throw new Error("Pickup and destination are required");
+  }
+
+  const { distance, duration } = await mapService.getDistance(
+    pickup,
+    destination
+  );
+
   if (typeof distance !== "number" || distance <= 0) {
-    throw new Error("Invalid distance provided to getFare");
+    throw new Error("Invalid distance returned from map service");
   }
 
-  const baseFare = { auto: 30, car: 50, motorCycle: 20 };
-  const perKmRate = { auto: 10, car: 15, motorCycle: 5 };
-  const perMinuteRate = { auto: 2, car: 3, motorCycle: 1.5 };
+  // Parse the duration
+  const durationInMinutes = parseDuration(duration);
 
-  if (
-    !baseFare[vehicleType] ||
-    !perKmRate[vehicleType] ||
-    !perMinuteRate[vehicleType]
-  ) {
-    throw new Error("Invalid vehicle type");
-  }
+  const baseFare = {
+    auto: 30,
+    car: 50,
+    moto: 20,
+  };
 
-  const rideTime = 15; // Example: 15 minutes
-  const fare =
-    baseFare[vehicleType] +
-    distance * perKmRate[vehicleType] +
-    (rideTime / 60) * perMinuteRate[vehicleType];
+  const perKmRate = {
+    auto: 10,
+    car: 15,
+    moto: 8,
+  };
 
-  if (isNaN(fare)) {
-    throw new Error("Fare calculation resulted in NaN");
-  }
+  const perMinuteRate = {
+    auto: 2,
+    car: 3,
+    moto: 1.5,
+  };
+
+  const fare = {
+    auto: Math.round(
+      baseFare.auto +
+        (distance / 1000) * perKmRate.auto +
+        durationInMinutes * perMinuteRate.auto
+    ),
+    car: Math.round(
+      baseFare.car +
+        (distance / 1000) * perKmRate.car +
+        durationInMinutes * perMinuteRate.car
+    ),
+    moto: Math.round(
+      baseFare.moto +
+        (distance / 1000) * perKmRate.moto +
+        durationInMinutes * perMinuteRate.moto
+    ),
+  };
 
   return fare;
 }
@@ -82,3 +108,14 @@ function generateOTP(num) {
 }
 
 module.exports.generateOTP = generateOTP;
+function parseDuration(durationStr) {
+  const regex = /(\d+)\s*hours?\s*(\d+)\s*mins?/;
+  const matches = durationStr.match(regex);
+  if (matches) {
+    const hours = parseInt(matches[1], 10);
+    const minutes = parseInt(matches[2], 10);
+    return hours * 60 + minutes; // Convert everything to minutes
+  } else {
+    throw new Error("Invalid duration format");
+  }
+}
